@@ -1,0 +1,183 @@
+---
+title: "Untitled"
+author: "Akhil Patil"
+date: "December 8, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+s_data <- read.csv("D:/Downloads/all_stocks_5yr.csv")
+s_data = filter(s_data, s_data$Name == "PSA")
+
+summary(s_data)
+
+```
+
+
+
+```{r}
+# Data Cleaning 
+
+s_data$date = as.Date(s_data$date)
+
+str(s_data)
+
+```
+
+```{r}
+#train  = subset(s_data, date < as.Date("2017-02-06"))
+
+train = s_data[s_data$date  <= as.Date("2017-02-06"), ]
+
+test = s_data[as.Date(s_data$date) > as.Date("2017-02-06"), ]
+
+
+```
+
+```{r}
+tail(train,50)
+```
+
+
+```{r}
+# Distribution of Closing price
+
+ggplot(s_data, aes(close)) + geom_histogram(bins = 50, aes(y = ..density..), col = "red", fill = "red", alpha = 0.3) + geom_density()# + xlim(c(0, 1000))
+
+
+
+```
+
+```{r}
+# Time Series Analysis
+
+tmp <- filter(train, close > 100) 
+sample(tmp$Name, 10)
+
+```
+
+```{r}
+i_stock <- filter(train, Name == "PSA")
+str(i_stock)
+
+```
+
+```{r}
+# Creating the Time Series
+
+train <- ts(train$close, start = c(2013,2), end=c(2017,2), frequency = 12)
+
+tail(train,10)
+
+test <- ts(test$close, start = c(2017,2), end=c(2018,2), frequency = 12)
+
+head(train,10)
+
+```
+
+```{r}
+tail(train,50)
+```
+
+
+```{r}
+#Stationarity
+library(aTSA)
+
+Test1 = ur.kpss(i_ts)
+summary(Test1)
+
+ndiffs(i_ts)
+
+Test2 = ur.kpss(diff(i_ts))
+summary(Test2)
+```
+
+```{r}
+#Decomposing Time Series
+
+i_tscomponents <- decompose(train)
+plot(i_tscomponents, col = "red")
+
+```
+
+```{r}
+tail(train,50)
+```
+
+
+```{r}
+i_tsdiff1 <- diff(i_ts, differences=1)
+plot.ts(i_tsdiff1, col = "red")
+```
+
+```{r}
+# For eciding Apporopriate Arima model
+acf(i_tsdiff1, lag.max=60)             # plot a correlogram
+
+```
+
+```{r}
+pacf(i_tsdiff1, lag.max=60)             # plot a partial correlogram
+
+```
+
+```{r}
+
+i_tsarima <- auto.arima(train)
+i_tsarima
+
+```
+
+```{r}
+library(forecast)
+#is.null(i_tsarima)
+fit.arima <- predict(i_tsarima, n.ahead=20)
+```
+
+
+```{r}
+# error bounds at 95% confidence level
+U <- fit.arima$pred + 2*fit.arima$se
+L <- fit.arima$pred - 2*fit.arima$se
+```
+
+```{r}
+ts.plot(train,fit.arima$pred, U, L, col=c(1,2,4,4), lty = c(1,1,2,2))
+legend("topleft", c("Actual", "Forecast", "Error Bounds (95% Confidence)"), col=c(1,2,4), lty=c(1,1,2), cex=0.5)
+```
+
+```{r}
+accuracy(fit.arima$pred , test)
+
+```
+```{r}
+test1 = diff(test, differences=1)
+```
+
+
+```{r}
+#fit1 <- hw(train,seasonal="additive",h=30)
+fit2 <- hw(train,seasonal="multiplicative",h=15)
+autoplot(train) +
+#autolayer(test) +
+#autolayer(ts(df_w$PRCP, start = c(1948,1), end=c(2010,12), frequency = 12))+
+#autoplot(ts(df_w$PRCP,start = c(2011,1) , end=c(2017,12), frequency = 12)) +
+  #autolayer(fit1, series="HW additive forecasts", PI=FALSE) +
+  autolayer(fit2, series="HW multiplicative forecasts",PI=FALSE) +
+  #autoplot(weather_ts_test,series="HW multiplicative forecasts",PI=FALSE) +
+  xlab("Year") +
+  ylab("Closing Price") +
+  ggtitle("Holt's Forecast") +
+  guides(colour=guide_legend(title="Forecast"))
+```
+
+```{r}
+accuracy(fit2 , test)
+
+```
+

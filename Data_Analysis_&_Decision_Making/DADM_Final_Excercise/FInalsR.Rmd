@@ -1,0 +1,391 @@
+---
+title: "DADM Finals"
+author: "Akhil Patil"
+date: "December 4, 2018"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+################## Q1 - > a ################
+
+#(a) Describe the null hypotheses to which the p-values given in the following table correspond. Explain what conclusions you can draw based on these p-values. Your explanation should be phrased in terms of sales, TV, radio, and newspaper, rather than in terms of the coefficients of the linear model.
+
+#=>
+
+#As per the table the null hypothesis indicates that the advertising budgets of "TV", "Radio" , "Newspaper" do not have any effect on sales.
+#H(1)0:??1=0 
+#H(2)0:??2=0 and
+#H(3)0:??3=0
+# The pvalues for "TV" and "Radio" are highly significant whereas pvalues are not significant for "Newspaper", 
+#so we reject H(1)0 and H(2)0 and accept H(3)0.
+#In conclusion we can say that Newspaper advertisiong budget does not affect Sales.
+
+```
+
+```{r}
+################## Q1 - > b ################
+
+##
+#  Included in hand written attachment
+##
+```
+
+
+```{r}
+################## Q1 - > c ################
+
+# Spliting Dataset in Train and Test Data
+set.seed(123)
+dim(iris)
+
+trainidx = sample(nrow(iris),nrow(iris)*0.80)
+train <- iris[trainidx, ]
+dim(train)
+
+
+test <- iris[-trainidx, ]
+dim(test)
+
+```
+
+```{r}
+colnames(iris)
+
+str(iris)
+
+fit.species <- lm(as.numeric(Species) ~ .,data = train)
+summary(fit.species)
+
+```
+
+```{r}
+# Predicting some sample species
+
+#Assume you have obtained samples from three plants, with measurements as listed below. Predict the likelihood that each of these plants belongs to the species .
+
+plant1 <- data.frame(Sepal.Length=0.4, Sepal.Width=0.8, Petal.Length=4.6, Petal.Width=1.8)
+plant2 <- data.frame(Sepal.Length=6.3, Sepal.Width=2.5, Petal.Length=4.1, Petal.Width=1.7)
+plant3 <- data.frame(Sepal.Length=6.7, Sepal.Width=3.3, Petal.Length=5.2, Petal.Width=2.3)
+
+predict(fit.species, plant1, type="response")
+
+
+predict(fit.species, plant2, type="response")
+
+
+predict(fit.species, plant3, type="response")
+
+```
+
+
+```{r}
+################## Q2 - > a ################
+
+library(ISLR)
+
+str(Auto)
+
+fit.auto = lm(mpg ~ horsepower,data = Auto)
+
+summary(fit.auto)
+
+```
+```{r}
+# i. Is there a relationship between the predictor and response?
+
+# => Yes, there is a relationship between mpg(Response) and horsepower(Predictor) as p-value(2e-16) is less than 0.05 significance level
+
+#ii. How strong is the relationship between the predictor and the response?
+
+# => From Summary of fit.auto we can say that the R-squared value is around 60% which shows that there is 60% variation in mpg(response variable) because of horsepower(predictor Variable)
+
+```
+
+```{r}
+#iii. Is the relationship between the predictor and response positive or negative?
+
+plot(Auto$mpg, Auto$horsepower)
+
+# => From the graph we can say that there is NEGATIVE relationship between  mpg(response variable)  & horsepower(predictor Variable) as Horsepower decreases with increase in mpg
+```
+```{r}
+#iv. What is predicted mpg associated with horsepower of 98? What is the associated 95% confidence and prediction intervals?
+
+# For Confidence Interval
+predict(fit.auto,data.frame(horsepower=c(98)),interval="confidence")
+
+# For Predicition Interval
+predict(fit.auto,data.frame(horsepower=c(98)),interval="predict")
+
+```
+
+```{r}
+################## Q2 - > b ################
+
+#(b) Plot the response and the predictor. Display the least square regression line.
+
+
+plot(Auto$horsepower , Auto$mpg )
+abline(fit.auto,col= "red")
+```
+
+```{r}
+################## Q2 - > c ################
+
+#(c) Use plot () function to produce diagnostic plots of the least square regression fit. Comment on any problems you see with the fit.
+
+plot(fit.auto)
+
+```
+
+```{r}
+################## Q3 - > a ################
+#This question involves the use of multiple linear regression on the Auto dataset.
+
+#(a) Produce a scatterplot matrix which includes all of the variables in the dataset.
+
+pairs(Auto)
+
+```
+
+```{r}
+################## Q3 - > b ################
+
+#(b) Compute the matrix of correlations between the variables using the function cor (). You will need to exclude name variable which is qualitative
+
+#Excluding the Name column
+Auto$name<-NULL
+
+# Default method is "Pearson"
+cor(Auto)
+
+```
+```{r}
+################## Q3 - > c ################
+
+#(c) Perform multiple linear regression with mpg as the response and all other variables except name as the predictors.
+
+# since we have eliminated name valiable earlier we can use same Auto dataset here.
+
+fit.mul = lm(mpg~.,Auto)
+
+summary(fit.mul)
+```
+```{r}
+#i. Is there a relationship between predictors and the response?
+#=>
+#Yes, There is Relationship between the Mpg(response variable) and the predictors.We can obtain itby testing hypothesis H0:??i=0 ???i . the p-value corresponding to F-statistic is less than 2.2e-16 , this proves that there is a relationship between "mpg" and other predictors.
+
+#ii. Which predictors appear to have a statistically significant relationship to the response?
+#=> 
+#From the summary t-statistic we can get that only four predictors are statically significant to "mpg" they are "displacement" , "weight","year" & "origin".
+
+#iii. What does the coefficient of the year variable suggest?
+#=> 
+#If the other predictors are constant then there is direct proportion between "mpg" and "year" i.e with every year cars are more feul efficient by 0.75 mpg/year
+
+```
+
+```{r}
+################## Q3 - > d ################
+
+
+# (d) Produce the diagnostic plots of linear regression fit. Comment on any problems you see with the fit.
+plot(fit.mul)
+
+
+#Does the residual plot suggest any unusually large outliers? 
+#=> 
+#The residuals vs fitted plot indicates the presence of non-linearity in data & the residuals versus levegrage plot shows presence of some outliers(>2 or <-2) not large outliers.
+
+#Does the leverage plot identify any observations with unusually high leverage?
+#=> 
+#Yes , the plot of Residuals versus Leverage shows the presence of one high Leverage point "14".
+
+
+
+```
+
+
+```{r}
+
+################## Q3 - > e ################
+# (e) Q log(X).sqrt(X),X^2
+
+# Transforming the whole matrix in Log, Sqrt, Sq
+Auto.log = log(Auto)
+Auto.sqrt = sqrt(Auto)
+Auto.sq = (Auto^2)
+```
+
+```{r}
+# log(X)
+fit.Auto.log = lm(mpg~.,Auto.log)
+
+summary(fit.Auto.log)
+
+plot(fit.Auto.log)
+
+#By Transforming the dataset by Log(X) we can see that the attributes horsepower , weight , acceleration, year, origin appears to be statistically significant with "mpg"
+#Residual error is 0.1136
+#R^2 = 0.89
+
+```
+
+```{r}
+#Sqrt(X)
+fit.Auto.sqrt = lm(mpg~.,Auto.sqrt)
+
+summary(fit.Auto.sqrt)
+
+plot(fit.Auto.sqrt)
+
+#By Transforming the dataset by Sqrt(X) we can see that the attributes horsepower , weight , year, origin appears to be statistically significant with "mpg" , which is similar to that of X
+#Residual error is 0.2964
+#R^2 is found to be 0.8662
+
+
+```
+
+```{r}
+#(X^2)
+fit.Auto.sq = lm(mpg~.,Auto.sq)
+
+summary(fit.Auto.sq)
+
+plot(fit.Auto.sq)
+
+#By Transforming the dataset by Sqrt(X) we can see that the attributes horsepower , weight , year, origin appears to be statistically significant with "mpg" , which is similar to that of X
+#Residual error is 0.2964
+#R^2 = 0.8662
+
+
+
+```
+
+```{r}
+################## Q4 - > a ################
+
+#i. Estimate the probability that a student who studies 40 hours and has an undergrad GPA of 3.5 gets an A in the class.
+
+est.prob <- function(x1,x2){ z <- exp(-6 + 0.05*x1 + 1*x2); return( round(z/(1+z),2))}
+
+est.prob(40,3.5)
+
+```
+
+```{r}
+#ii. How many hours would the student in part (i) need to study to have a 50% chance of getting an A in the class?
+
+##To increase the chance of A without alter the GPA, the student have to increase the number of hours, so i test a sequence of hours and see how the chances change.
+
+hours <- seq(40,60,1)
+probs <- mapply(hours, 3.5, FUN=est.prob)
+names(probs) <- paste0(hours,"h")
+probs
+
+## By seeing the probs output we can interpret that to have 50% cahnge the sudent needs to study atleast 50 hours.
+
+
+```
+
+```{r}
+################## Q4 - > b ################
+
+##
+#  Included in hand written attachment
+##
+
+```
+
+
+```{r}
+################## Q5 - > a ################
+
+# In this problem, you will develop a model to predict whether a given car gets high or low gas mileage based on the Auto dataset.
+# (a) Create a binary variable, mpg01, that contains a 1 if mpg contains a value above its median, and a 0 if mpg contains a value below its median.
+
+data(Auto)
+
+mpg01 <- rep(0, length(Auto$mpg))
+mpg01[Auto$mpg > median(Auto$mpg)] <- 1
+Auto <- data.frame(Auto, mpg01)
+summary(Auto)
+```
+
+```{r}
+
+################## Q5 - > b ################
+
+# (b) Explore the data graphically in order to investigate the association between mpg01 and the other features. Which of the other features seem most likely to be useful in predicting mpg01? Scatter plots and boxplots may be useful tools to answer this question.
+#Describe your findings.
+
+attach(Auto)
+
+# Boxplots
+boxplot(cylinders ~ mpg01, data = Auto, main = "Cylinders vs mpg01")
+boxplot(displacement ~ mpg01, data = Auto, main = "Displacement vs mpg01")
+boxplot(horsepower ~ mpg01, data = Auto, main = "Horsepower vs mpg01")
+boxplot(weight ~ mpg01, data = Auto, main = "Weight vs mpg01")
+boxplot(acceleration ~ mpg01, data = Auto, main = "Acceleration vs mpg01")
+boxplot(year ~ mpg01, data = Auto, main = "Year vs mpg01")
+
+# Above Box plots indicates that there exists some relation between "mpg01" and "cylinders", "weight", "displacement" and "horsepower".
+```
+
+```{r}
+for(i in c("cylinders", "origin")){
+  aux <- table(eval(parse(text=i)), mpg01)
+  barplot(aux, xlab="mpg01", ylab=i, beside=T,  legend=rownames(aux))
+}
+
+# By the bove Barplots, cylinders and origin also show relation with mpg01. For instance, on dataset cars of lower mpg are majoraty from origin 1, which is American.
+```
+
+```{r}
+################## Q5 - > c ################
+
+#(c) Split the data into training and test set.
+
+# splitting the train and test set into 75% and 25%
+set.seed(123)
+rows <- sample(x=nrow(Auto), size=.75*nrow(Auto))
+trainset <- Auto[rows, ]
+testset <- Auto[-rows, ]
+
+dim(trainset)
+dim(testset)
+
+```
+
+```{r}
+################## Q5 - > d ################
+
+#(d) Perform logistic regression on the training data in order to predict mpg01 using the variables that seemed most associated with mpg01 in 
+fit.lr <- glm(mpg01 ~ cylinders + weight + displacement + horsepower, data = trainset, family = binomial)
+summary(fit.lr)
+
+```
+
+```{r}
+probs <- predict(fit.lr, testset, type = "response")
+pred.glm <- rep(0,length(probs))
+pred.glm[probs > 0.5] <-1
+table(pred.glm, testset$mpg01)
+
+```
+```{r}
+#Q5 -> (d)->  (b). What is the test error of the model obtained?
+
+mean(pred.glm != testset$mpg01)*100
+#Test error rate in logistic regression is  10.20%
+
+```
+

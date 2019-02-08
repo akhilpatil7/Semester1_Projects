@@ -1,0 +1,184 @@
+mysql> CREATE DATABASE BDMASSIGNMENT ;
+Query OK, 1 row affected (0.06 sec)
+
+mysql> USE BDMASSIGNMENT;
+Database changed
+
+# CREATE TABLES STOCK , PRICE , BUYNSELL SCHEMA 
+
+mysql> CREATE TABLE STOCK
+    -> (
+    -> TICKER   VARCHAR(150) NOT NULL,
+    -> EXCHANGE VARCHAR(150) NOT NULL,
+    -> PRIMARY KEY (TICKER)
+    -> );
+Query OK, 0 rows affected (0.21 sec)
+
+mysql> CREATE TABLE PRICE
+    -> (
+    -> TICKER VARCHAR(150) NOT NULL,
+    -> DATE   DATE   NOT NULL,
+    -> CLOSE  FLOAT UNSIGNED NOT NULL
+    -> );
+Query OK, 0 rows affected (0.18 sec)
+
+mysql> CREATE TABLE BUYnSELL
+    -> (
+    -> TICKER VARCHAR(150) NOT NULL,
+    -> BUY_OR_SELL VARCHAR(20) NOT NULL,
+    -> DATE DATE NOT NULL,
+    -> TIMESTAMP TIMESTAMP NOT NULL,
+    -> PRICE FLOAT UNSIGNED NOT NULL,
+    -> NUM_OF_SHARES INT UNSIGNED NOT NULL
+    -> );
+
+
+mysql> SHOW TABLES;
++-------------------------+
+| Tables_in_bdmassignment |
++-------------------------+
+| buynsell                |
+| price                   |
+| stock                   |
++-------------------------+
+3 rows in set (0.04 sec)
+
+
+# SCHEMA OF THE TABLES ! 
+
+mysql> DESCRIBE BUYNSELL
+    -> ;
++---------------+------------------+------+-----+---------+-------+
+| Field         | Type             | Null | Key | Default | Extra |
++---------------+------------------+------+-----+---------+-------+
+| TICKER        | varchar(150)     | NO   |     | NULL    |       |
+| BUY_OR_SELL   | varchar(20)      | NO   |     | NULL    |       |
+| DATE          | date             | NO   |     | NULL    |       |
+| TIMESTAMP     | timestamp        | NO   |     | NULL    |       |
+| PRICE         | float unsigned   | NO   |     | NULL    |       |
+| NUM_OF_SHARES | int(10) unsigned | NO   |     | NULL    |       |
++---------------+------------------+------+-----+---------+-------+
+6 rows in set (0.01 sec)
+
+mysql> DESCRIBE PRICE;
++--------+----------------+------+-----+---------+-------+
+| Field  | Type           | Null | Key | Default | Extra |
++--------+----------------+------+-----+---------+-------+
+| TICKER | varchar(150)   | NO   |     | NULL    |       |
+| DATE   | date           | NO   |     | NULL    |       |
+| CLOSE  | float unsigned | NO   |     | NULL    |       |
++--------+----------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> DESCRIBE STOCK;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| TICKER   | varchar(150) | NO   | PRI | NULL    |       |
+| EXCHANGE | varchar(150) | NO   |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+
+# INSERTING VALUES IN THE TABLES CREATED ABOVE TO REALIZE THE DATABASE INSTANCE 
+
+
+# TABLE 1 STOCK 
+ 
+mysql> INSERT INTO STOCK (TICKER,EXCHANGE) VALUES
+    -> ('AAPL','NASDAQ'),
+    -> ('GOOG','NASDAQ'),
+    -> ('MSFT','NASDAQ'),
+    -> ('IBM','NYSE');
+Query OK, 4 rows affected (0.10 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> select * from stock;
++--------+----------+
+| TICKER | EXCHANGE |
++--------+----------+
+| AAPL   | NASDAQ   |
+| GOOG   | NASDAQ   |
+| IBM    | NYSE     |
+| MSFT   | NASDAQ   |
++--------+----------+
+5 rows in set (0.00 sec)
+
+#  TABLE 2 PRICE
+
+INSERT INTO PRICE(TICKER, DATE, CLOSE) VALUES
+    -> ('AAPL', '2018-09-20',100),
+    -> ('AAPL','2018-09-21',101.5),
+    -> ('AAPL','2018-09-22',106.5),
+    -> ('GOOG','2018-09-20',130),
+    -> ('GOOG','2018-09-21',130),
+    -> ('GOOG','2018-09-22',110),
+    -> ('MSFT','2018-09-20',184.5),
+    -> ('MSFT','2018-09-21',188.5),
+    -> ('MSFT','2018-09-22',210),
+	-> ('IBM','2018-09-20',72),
+    -> ('IBM','2018-09-21',70),
+    -> ('IBM','2018-09-22',10);
+	
+	
+mysql> SELECT * FROM PRICE;
++--------+------------+-------+
+| TICKER | DATE       | CLOSE |
++--------+------------+-------+
+| AAPL   | 2018-09-20 |   100 |
+| AAPL   | 2018-09-21 | 101.5 |
+| AAPL   | 2018-09-22 | 106.5 |
+| GOOG   | 2018-09-20 |   100 |
+| GOOG   | 2018-09-21 |   130 |
+| GOOG   | 2018-09-22 |   110 |
+| MSFT   | 2018-09-20 | 184.5 |
+| MSFT   | 2018-09-21 | 188.5 |
+| MSFT   | 2018-09-22 |   210 |
+| IBM    | 2018-09-20 |   120 |
+| IBM    | 2018-09-21 |    70 |
+| IBM    | 2018-09-22 |    10 |
++--------+------------+-------+
+12 rows in set (0.00 sec)
+
+#  TABLE 3 BUYNSELL
+
+mysql> INSERT INTO BUYnSELL(TICKER,BUY_OR_SELL,DATE,PRICE,NUM_OF_SHARES) VALUES
+    -> 	   ('IBM', 'BUY','2018-09-20', 273,1100);
+    ->     ('IBM', 'SELL','2018-09-22', 270.5,2500),
+    ->     ('IBM', 'BUY','2018-09-21', 271,2400),
+    ->     ('GOOG','BUY','2018-09-20',86,2200),
+    ->     ('GOOG','SELL','2018-09-20',87,1000),
+    ->     ('GOOG','SELL','2018-09-21',87.5,1000),
+    ->     ('GOOG','BUY','2018-09-21',87,800),
+    ->     ('GOOG', 'SELL','2018-09-22',86,500), 
+    ->     ('AAPL','BUY', '2018-09-20', 99, 1000),
+    ->     ('AAPL','BUY', '2018-09-20', 99.5, 1000),
+    ->     ('AAPL','BUY','2018-09-21',100,1000),
+    ->     ('AAPL','SELL', '2018-09-22', 103, 3000),
+    ->     ('MSFT', 'BUY','2018-09-20', 186,1500),
+    ->     ('MSFT','SELL','2018-09-21', 188,1000),
+    ->     ('MSFT','BUY','2018-09-22',187,5000);
+Query OK, 14 rows affected (0.10 sec)
+Records: 14  Duplicates: 0  Warnings: 0
+
+mysql> select * from buynsell;
++--------+-------------+------------+---------------------+-------+---------------+
+| TICKER | BUY_OR_SELL | DATE       | TIMESTAMP           | PRICE | NUM_OF_SHARES |
++--------+-------------+------------+---------------------+-------+---------------+
+| IBM    | BUY         | 2018-09-20 | 2018-11-14 14:28:35 |   273 |          1100 |
+| IBM    | SELL        | 2018-09-22 | 2018-11-14 14:28:35 | 270.5 |          2500 |
+| IBM    | BUY         | 2018-09-21 | 2018-11-14 14:28:35 |   271 |          2400 |
+| GOOG   | BUY         | 2018-09-20 | 2018-11-14 14:28:35 |    86 |          2200 |
+| GOOG   | SELL        | 2018-09-20 | 2018-11-14 14:28:35 |    87 |          1000 |
+| GOOG   | SELL        | 2018-09-21 | 2018-11-14 14:28:35 |  87.5 |          1000 |
+| GOOG   | BUY         | 2018-09-21 | 2018-11-14 14:28:35 |    87 |           800 |
+| GOOG   | SELL        | 2018-09-22 | 2018-11-14 14:28:35 |    86 |           500 |
+| AAPL   | BUY         | 2018-09-20 | 2018-11-14 14:28:35 |    99 |          1000 |
+| AAPL   | BUY         | 2018-09-20 | 2018-11-14 14:28:35 |  99.5 |          1000 |
+| AAPL   | BUY         | 2018-09-21 | 2018-11-14 14:28:35 |   100 |          1000 |
+| AAPL   | SELL        | 2018-09-22 | 2018-11-14 14:28:35 |   103 |          3000 |
+| MSFT   | BUY         | 2018-09-20 | 2018-11-14 14:28:35 |   186 |          1500 |
+| MSFT   | SELL        | 2018-09-21 | 2018-11-14 14:28:35 |   188 |          1000 |
+| MSFT   | BUY         | 2018-09-22 | 2018-11-14 14:28:35 |   187 |          5000 |
++--------+-------------+------------+---------------------+-------+---------------+
+15 rows in set (0.00 sec)
